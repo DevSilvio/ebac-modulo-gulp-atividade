@@ -24,24 +24,15 @@ function comprimeJs() {
     .pipe(gulp.dest('./build/scripts'));
 }
 
-// Antes de iniciar a função de compressão de imagens precisa instalar 2 plugins ao teminal do NODE
-// npm install -g imagemin-cli
-// npm install -g imagemin-mozjpeg imagemin-pngquant --> para compressão de imagens tipo JPEG e PNG
-// Lembre também de ter a pasta aonde esta hospedadas as imagens e uma pasta para ondes as imagens comprimidas vão.
-function comprimeImages(cb) {
-    exec('npx imagemin source/images/*.{jpg,png} --plugin=mozjpeg --plugin=pngquant --out-dir=build/images',
-        (err, stdout, stderr) => {
-            if (stdout) console.log(`✅ Saída: ${stdout}`);
-            if (stderr) console.error(`⚠️ Erro: ${stderr}`);
-            cb(err);
-        });
+function comprimeImages() {
+    return gulp.src('./source/images/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/images'))
     }
     
 function limpaBuild() {
     return deleteAsync(['./build']);
 }
 
-exports.sass = comprimeSass;
-exports.js = comprimeJs;
-exports.images = comprimeImages;
 exports.limpaBuild = limpaBuild;
+exports.default = gulp.series(comprimeSass,comprimeJs,comprimeImages);
